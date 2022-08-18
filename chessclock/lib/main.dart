@@ -8,7 +8,7 @@ void main() {
       initialRoute: '/',
       routes: {
         '/': (context) => MyApp(m: 5, s: 5),
-        '/setting': (context) => const setting(),
+        '/setting': (context) => const Setting(),
         '/home1': (context) => MyApp(m: 1, s: 0),
         '/home2': (context) => MyApp(m: 1, s: 1),
         '/home3': (context) => MyApp(m: 2, s: 1),
@@ -30,11 +30,11 @@ void main() {
 }
 
 // int m = 5;
-
+@immutable
 class MyApp extends StatefulWidget {
   final m;
   final s;
-  MyApp({this.m, this.s});
+  MyApp({Key? key, this.m, this.s}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _MyAppState(m, s);
@@ -46,10 +46,11 @@ class _MyAppState extends State<MyApp> {
   final int s;
   var whu = 0;
   _MyAppState(this.m, this.s);
-  Duration duration1 = Duration();
-  Duration duration2 = Duration();
+  Duration duration1 = const Duration();
+  Duration duration2 = const Duration();
   Timer? timer1;
   Timer? timer2;
+  @override
   void initState() {
     super.initState();
     Duration duration1 = Duration(minutes: m);
@@ -62,8 +63,8 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       Duration d1 = Duration(minutes: m);
       Duration d2 = Duration(minutes: m);
-      this.duration1 = d1;
-      this.duration2 = d2;
+      duration1 = d1;
+      duration2 = d2;
       timer2?.cancel();
       timer1?.cancel();
       whu = 0;
@@ -71,14 +72,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   void remsec1() {
-    final remsecond = 1;
+    const remsecond = 1;
     setState(() {
       final seconds1 = duration1.inSeconds - remsecond;
       if (seconds1 == 0 || seconds1 < 0) {
         timer1?.cancel();
       }
       if (seconds1 == 0 || seconds1 < 0) {
-        duration1 = Duration(seconds: 0);
+        duration1 = const Duration(seconds: 0);
       } else {
         duration1 = Duration(seconds: seconds1);
       }
@@ -86,15 +87,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   void remsec2() {
-    final remsecond = 1;
-    final s = this.s;
+    const remsecond = 1;
     setState(() {
       final seconds2 = duration2.inSeconds - remsecond;
       if (seconds2 == 0 || seconds2 < 0) {
         timer2?.cancel();
       }
       if (seconds2 == 0 || seconds2 < 0) {
-        duration2 = Duration(seconds: 0);
+        duration2 = const Duration(seconds: 0);
       } else {
         duration2 = Duration(seconds: seconds2);
       }
@@ -102,42 +102,48 @@ class _MyAppState extends State<MyApp> {
   }
 
   void starttimer1() {
+    if (duration1.inSeconds == 0 || duration2.inSeconds == 0) {
+      return;
+    }
     if (whu != 1) {
       timer1?.cancel();
       timer2?.cancel();
       final int seconds2 = duration2.inSeconds + s;
       duration2 = Duration(seconds: seconds2);
-      timer1 = Timer.periodic(Duration(seconds: 1), (_) => remsec1());
+      timer1 = Timer.periodic(const Duration(seconds: 1), (_) => remsec1());
       whu = 1;
     }
   }
 
   void starttimer2() {
+    if (duration1.inSeconds == 0 || duration2.inSeconds == 0) {
+      return;
+    }
     if (whu != 2) {
       timer1?.cancel();
       timer2?.cancel();
       final int seconds1 = duration1.inSeconds + s;
       duration1 = Duration(seconds: seconds1);
-      timer2 = Timer.periodic(Duration(seconds: 1), (_) => remsec2());
+      timer2 = Timer.periodic(const Duration(seconds: 1), (_) => remsec2());
       whu = 2;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Getcol1() {
+    Color getcol1() {
       if (whu == 1) {
         return Colors.orange;
       } else {
-        return Color.fromARGB(255, 92, 91, 91);
+        return const Color.fromARGB(255, 92, 91, 91);
       }
     }
 
-    Getcol2() {
+    Color getcol2() {
       if (whu == 2) {
         return Colors.orange;
       } else {
-        return Color.fromARGB(255, 92, 91, 91);
+        return const Color.fromARGB(255, 92, 91, 91);
       }
     }
 
@@ -150,400 +156,393 @@ class _MyAppState extends State<MyApp> {
     var height = size.height - 40;
     var width = size.width;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 47, 47, 47),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              height: height * 0.375,
-              width: width,
-              margin: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
-                child: RotatedBox(
-                  quarterTurns: 2,
-                  child: Text(
-                    "$minute1:$second1",
-                    style: TextStyle(
-                      fontSize: 50,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                onPressed: starttimer2,
-                style: ElevatedButton.styleFrom(
-                  primary: Getcol1(),
-                ),
+      backgroundColor: const Color.fromARGB(255, 47, 47, 47),
+      body: Column(
+        children: [
+          Container(
+            height: height * 0.375,
+            width: width,
+            margin: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: getcol1(),
               ),
-            ),
-            Center(
-              child: Container(
-                // color: Color.fromARGB(255, 255, 255, 255),
-                child: Row(
-                  children: [
-                    Container(
-                      height: height * 0.25,
-                      width: width * 0.5,
-                      child: Padding(
-                        padding: EdgeInsets.all(0),
-                        child: IconButton(
-                          icon: const Icon(Icons.settings),
-                          iconSize: 50,
-                          color: const Color.fromARGB(255, 91, 91, 91),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/setting');
-                          },
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: height * 0.25,
-                      width: width * 0.5,
-                      child: Padding(
-                        padding: EdgeInsets.all(0),
-                        child: IconButton(
-                          icon: const Icon(Icons.restore),
-                          iconSize: 50,
-                          color: Color.fromARGB(255, 91, 91, 91),
-                          onPressed: startagain,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              height: height * 0.375,
-              width: width,
-              margin: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
+              onPressed: starttimer2,
+              child: RotatedBox(
+                quarterTurns: 2,
                 child: Text(
-                  "$minute2:$second2",
-                  style: TextStyle(
+                  "$minute1:$second1",
+                  style: const TextStyle(
                     fontSize: 50,
                     color: Colors.black,
                   ),
                 ),
-                onPressed: starttimer1,
-                style: ElevatedButton.styleFrom(
-                  primary: Getcol2(),
+              ),
+            ),
+          ),
+          Center(
+            child: Row(
+              children: [
+                SizedBox(
+                  height: height * 0.25,
+                  width: width * 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: IconButton(
+                      icon: const Icon(Icons.settings),
+                      iconSize: 50,
+                      color: const Color.fromARGB(255, 91, 91, 91),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/setting');
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.25,
+                  width: width * 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: IconButton(
+                      icon: const Icon(Icons.restore),
+                      iconSize: 50,
+                      color: const Color.fromARGB(255, 91, 91, 91),
+                      onPressed: startagain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: height * 0.375,
+            width: width,
+            margin: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: getcol2(),
+              ),
+              onPressed: starttimer1,
+              child: Text(
+                "$minute2:$second2",
+                style: const TextStyle(
+                  fontSize: 50,
+                  color: Colors.black,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class setting extends StatefulWidget {
-  const setting({Key? key}) : super(key: key);
+class Setting extends StatefulWidget {
+  const Setting({Key? key}) : super(key: key);
 
   @override
-  State<setting> createState() => _settingState();
+  State<Setting> createState() => _SettingState();
 }
 
-class _settingState extends State<setting> {
+class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var height = size.height;
+    // var height = size.height;
     var width = size.width;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 47, 47, 47),
+      backgroundColor: const Color.fromARGB(255, 47, 47, 47),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 37, 37, 37),
+        backgroundColor: const Color.fromARGB(255, 37, 37, 37),
         title: const Text('Setting'),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 30.0),
-              child: const Text(
-                "Bullet",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 30.0),
+            child: const Text(
+              "Bullet",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Container(
+            width: width,
+            margin: const EdgeInsets.all(5.0),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home1');
+                    },
+                    child: const Text("1 min"),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              width: width,
-              margin: EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      child: const Text("1 min"),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home1');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home2');
+                    },
+                    child: const Text("1 | 1"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home2');
-                      },
-                      child: const Text("1 | 1"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home3');
-                      },
-                      child: const Text("2 | 1"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 30.0),
-              child: const Text(
-                "Blitz",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
                 ),
-              ),
-            ),
-            Container(
-              width: width,
-              margin: EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home4');
-                      },
-                      child: const Text("3 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home3');
+                    },
+                    child: const Text("2 | 1"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home5');
-                      },
-                      child: const Text("3 | 2"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home6');
-                      },
-                      child: const Text("3 | 5"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: width,
-              margin: EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home7');
-                      },
-                      child: const Text("5 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home8');
-                      },
-                      child: const Text("5 | 5"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home9');
-                      },
-                      child: const Text("5 | 10"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 30.0),
-              child: const Text(
-                "Rapid",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
                 ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 30.0),
+            child: const Text(
+              "Blitz",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
               ),
             ),
-            Container(
-              width: width,
-              margin: EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home10');
-                      },
-                      child: const Text("10 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+          ),
+          Container(
+            width: width,
+            margin: const EdgeInsets.all(5.0),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home4');
+                    },
+                    child: const Text("3 min"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home11');
-                      },
-                      child: const Text("30 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home5');
+                    },
+                    child: const Text("3 | 2"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home12');
-                      },
-                      child: const Text("15 | 10"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home6');
+                    },
+                    child: const Text("3 | 5"),
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: width,
+            margin: const EdgeInsets.all(5.0),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home7');
+                    },
+                    child: const Text("5 min"),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home8');
+                    },
+                    child: const Text("5 | 5"),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home9');
+                    },
+                    child: const Text("5 | 10"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 30.0),
+            child: const Text(
+              "Rapid",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
               ),
             ),
-            Container(
-              width: width,
-              margin: EdgeInsets.all(5.0),
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home13');
-                      },
-                      child: const Text("20 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+          ),
+          Container(
+            width: width,
+            margin: const EdgeInsets.all(5.0),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home10');
+                    },
+                    child: const Text("10 min"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home14');
-                      },
-                      child: const Text("60 min"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home11');
+                    },
+                    child: const Text("30 min"),
                   ),
-                  Container(
-                    margin: EdgeInsets.all(5.0),
-                    height: 50.0,
-                    width: (width - 40) / 3,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home15');
-                      },
-                      child: const Text("45 | 45"),
-                      style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 91, 91, 91),
-                      ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
                     ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home12');
+                    },
+                    child: const Text("15 | 10"),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Container(
+            width: width,
+            margin: const EdgeInsets.all(5.0),
+            child: Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home13');
+                    },
+                    child: const Text("20 min"),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home14');
+                    },
+                    child: const Text("60 min"),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(5.0),
+                  height: 50.0,
+                  width: (width - 40) / 3,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/home15');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color.fromARGB(255, 91, 91, 91),
+                    ),
+                    child: const Text("45 | 45"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
