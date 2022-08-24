@@ -132,6 +132,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Color getcol1() {
+      if (duration1.inSeconds == 0) {
+        return Colors.red;
+      }
       if (whu == 1) {
         return Colors.orange;
       } else {
@@ -140,6 +143,9 @@ class _MyAppState extends State<MyApp> {
     }
 
     Color getcol2() {
+      if (duration2.inSeconds == 0) {
+        return Colors.red;
+      }
       if (whu == 2) {
         return Colors.orange;
       } else {
