@@ -15,8 +15,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int m = 5;
-  int s = 5;
+  int m = 0;
+  int s = 0;
   var whu = 0;
   Duration duration1 = const Duration();
   Duration duration2 = const Duration();
@@ -25,9 +25,8 @@ class _MyAppState extends State<MyApp> {
   bool hi = true;
   @override
   void initState() {
-    hi = false;
     super.initState();
-    // getting val from provs and setting it while first entry from stack 
+    // getting val from provs and setting it while first entry from stack
     var t = Provider.of<Ms>(context, listen: false);
     m = t.m;
     s = t.s;
@@ -189,11 +188,10 @@ class _MyAppState extends State<MyApp> {
                   child: Padding(
                     padding: const EdgeInsets.all(0),
                     child: IconButton(
-                      icon: const Icon(Icons.restore),
-                      iconSize: 50,
-                      color: const Color.fromARGB(255, 91, 91, 91),
-                      onPressed: startagain
-                    ),
+                        icon: const Icon(Icons.restore),
+                        iconSize: 50,
+                        color: const Color.fromARGB(255, 91, 91, 91),
+                        onPressed: startagain),
                   ),
                 ),
               ],
